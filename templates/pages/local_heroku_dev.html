@@ -1,0 +1,136 @@
+{% extends "/layout.html" %}
+
+{% block styles %}{% endblock %}
+
+
+{% block body %}
+<article class="markdown-body entry-content" itemprop="mainContentOfPage"><h1>
+<a name="local-web-development-with-python" class="anchor" href="#local-web-development-with-python"><span class="mini-icon mini-icon-link"></span></a>Local Web Development with Python</h1>
+
+<p>Also available on <a href="https://gist.github.com/eeab6a6e659b64ac22ad">Github</a>.</p>
+
+<h2>
+<a name="initial-virtualenv-setup" class="anchor" href="#initial-virtualenv-setup"><span class="mini-icon mini-icon-link"></span></a>Initial Virtualenv Setup</h2>
+
+<p><strong>If you have not setup Virtualenv on your working code directory use the steps below.</strong></p>
+
+<ol>
+<li>In Terminal console, open your code directory.</li>
+<li>
+<p>To create the Virtualenv run the following command,</p>
+
+<pre><code>virutalenv venv
+</code></pre>
+
+<p>This will create a new directory called <strong>venv</strong> to hold you code directory's Python modules.</p>
+</li>
+</ol><h2>
+<a name="running-the-local-web-server" class="anchor" href="#running-the-local-web-server"><span class="mini-icon mini-icon-link"></span></a>Running the local web server</h2>
+
+<ol>
+<li>In Terminal console, open your code directory.</li>
+<li>
+<p>Turn on Virtualenv for the directory.</p>
+
+<pre><code>source venv/bin/activate
+</code></pre>
+
+<p>Or use '.' instead of 'source', same thing.</p>
+
+<pre><code>. venv/bin/activate
+</code></pre>
+</li>
+<li>
+<p>Install new or modified Python modules.  This only needs to happen when needed, the first time code is run, or after a new module is added to <strong>requirements.txt</strong>.</p>
+
+<pre><code>pip install -r requirements.txt
+</code></pre>
+</li>
+<li>
+<p>Run the server</p>
+
+<pre><code>foreman start
+</code></pre>
+</li>
+<li><p>Open web browser and view <a href="http://localhost:5000">http://localhost:5000</a> </p></li>
+<li><p>To stop the server press <strong>CTRL+C</strong> inside the Terminal console.</p></li>
+</ol><h2>
+<a name="heroku---getting-your-app-to-the-masses" class="anchor" href="#heroku---getting-your-app-to-the-masses"><span class="mini-icon mini-icon-link"></span></a>Heroku - Getting your App to the Masses</h2>
+
+<p>When you local web server is working correctly, you can start to prepare your code for Heroku.</p>
+
+<h2>
+<a name="initial-heroku-setup" class="anchor" href="#initial-heroku-setup"><span class="mini-icon mini-icon-link"></span></a>Initial Heroku Setup</h2>
+
+<ol>
+<li>
+<p>Create a Git repository, open your code directory in a Terminal console. The commands below will,</p>
+
+<ul>
+<li>Create the repo.</li>
+<li>Add all code files and assets</li>
+<li>Make initial commit to the Git repo with message.</li>
+</ul>
+<p>Run the following commands inside your code directory.</p>
+
+<pre><code>git init
+git add .
+git commit -am "initial commit"
+</code></pre>
+</li>
+<li>
+<p>Log into Heroku, this only needs to happen once in a while.</p>
+
+<pre><code>heroku login
+</code></pre>
+
+<p>If your Heroku keys are messed up have a look at <a href="https://devcenter.heroku.com/articles/keys">https://devcenter.heroku.com/articles/keys</a>.</p>
+</li>
+<li>
+<p>Create a new Heroku app. This will create a new weird subdomain for your app. This will add a new remote Git path in your Git repository.</p>
+
+<pre><code>heroku create
+</code></pre>
+</li>
+</ol><h2>
+<a name="pushing-your-code-to-heorku" class="anchor" href="#pushing-your-code-to-heorku"><span class="mini-icon mini-icon-link"></span></a>Pushing your code to Heorku</h2>
+
+<ol>
+<li>
+<p>Commit / Save your local code changes. Inside your code directory, commit your code.</p>
+
+<pre><code>git add .
+git commit -am "I made some changes...."
+</code></pre>
+</li>
+<li>
+<p>Push your code to Heroku. </p>
+
+<pre><code>git push heroku master
+</code></pre>
+
+<p>This command pushes your local code up to heroku (to the Heroku git branch is master).</p>
+</li>
+</ol></article>
+
+<div class="page-header" id="comments">
+	<h3>Discussion</h3>
+	
+</div>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'itppyweb'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+{% endblock %}

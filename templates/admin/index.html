@@ -1,0 +1,34 @@
+{% extends "/layout_admin.html" %}
+
+{% block styles %}{% endblock %}
+
+{% block body %}
+
+<div class="row">
+	<div class="column span12">
+		<br><br><Br>
+		<b>Classnote Entries</b>
+		<a class="btn btn-small" href="/admin/entry">Create new entry</a>
+
+		<br><br>
+
+		<table class="table">
+		{% for e in entries %}
+			<tr>
+				<td class="span2">{{ e.class_date.strftime('%Y-%m-%d') }}</td>
+				<td class="span3">{{ e.title }}</td>
+				<td class="span3">{{ e.description }}</td>
+				<td class="span3">
+					<a class="btn" href="/admin/entry/edit/{{e._id}}">edit</a>
+					<a class="btn" href="entry/{{e.url_title}}">view</a>
+				</td>
+			</tr>
+			
+		{% endfor %}
+		</table>
+	</div>
+	
+</div>
+
+
+{% endblock %}

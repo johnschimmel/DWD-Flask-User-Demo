@@ -1,0 +1,107 @@
+{% extends "/layout.html" %}
+
+{% block styles %}{% endblock %}
+
+{% block body %}
+
+<div class="row">
+	<div class="span2">
+		<br>
+		{{ entry.class_date.strftime('%B %d') }}
+		<ul>
+			<li><a href="#notes">Class notes</a></li>
+			<li><a href="#assignment">Assignment</a></li>
+		</ul>
+		
+	</div>
+	<div class="span10">
+		<div class="page-header">
+			<h2>{{ entry.title }}</h2>
+		</div>
+		
+		<h5>
+			{{ entry.description }}
+		</h5>
+
+		<hr>
+
+		<div id="notes">
+			{{ entry.content|safe }}
+		</div>
+
+		<hr>
+
+		<div class="page-header" id="assignment">
+			<h3>Assignment</h3>
+			
+		</div>
+		<div>
+			{{ entry.assignment|safe }}
+		
+			<hr>
+			<div class="row">
+				<div class="span3" id="submit_form_container">
+					<h3>Post your assignment</h3>
+					<label for="name">Name</label>
+					<input type="text" id="form_name" name="name">
+					<br>
+					<label for="url">URL</label>
+					<input type="text" id="form_url" name="url">
+					<br>
+					<label for="description">Description</label>
+					<textarea id="form_description" name="description"></textarea>
+					<br>
+					<input type="text" name="email" style="display:none;">
+					<p>All fields are required</p>
+					<input type="button" id="submit_assignment" value="Submit assignment">
+				</div>
+
+				<div class="span5">
+					<h3>Assignments</h3>
+					<div id="assignment_container">
+						{% for a in entry.assignments %}
+
+						<div class="assignment">
+							<strong>{{ a.name }}</strong> | {{ a.timestamp.strftime('%B %d') }}
+							<p><a href="{{ a.url}}">{{ a.url}}</a></p>
+							<p>{{ a.description }}</p>
+							<hr/>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div><!-- row -->
+			<hr/>
+
+		</div>
+		
+		<div class="page-header" id="comments">
+			<h3>Discussion</h3>
+			
+		</div>
+		<div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'itppyweb'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        
+
+	</div>
+
+
+	
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/entry.js') }}" type="text/javascript"></script>
+{% endblock %}
