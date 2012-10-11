@@ -51,6 +51,15 @@ login_manager.setup_app(app)
 
 @app.route('/')
 def index():
+
+	user = models.User.objects.get(email='john.schimmel@gmail.com')
+	app.logger.debug(user.password)
+
+	content = models.Content()
+	content.user = user
+	content.content = "wowza"
+	content.save()
+	
 	return 'Hello World!'
 
 
