@@ -75,7 +75,7 @@ or
 ## The routes
 
 * / - main page - display all content and list of users
-* /user/<username> - display all content for a given user
+* /users/&lt;username&gt;- display all content for a given user
 * /admin  - must be logged in, create a new piece of content for a user
 * /register - create a new user
 * /login - login with registered email and password
