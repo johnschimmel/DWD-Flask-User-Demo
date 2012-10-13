@@ -166,10 +166,10 @@ def register():
 
 			# uniqueness error was raised. tell user (via flash messaging) which error they need to fix.
 			if str(error).find("email") > -1:			
-				flash("Email submitted is already registered.")
+				flash("Email submitted is already registered.","register")
 	
 			elif str(error).find("username") > -1:
-				flash("Username is already registered. Pick another.")
+				flash("Username is already registered. Pick another.","register")
 
 			app.logger.error(error)	
 
@@ -206,8 +206,10 @@ def login():
 				return redirect(request.args.get("next") or '/admin')
 			else:
 
-				flash("unable to log you in")
-		
+				flash("unable to log you in","login")
+		else:
+			flash("unable to find that email address","login")
+			return redirect("/login")
 
 	else:
 
