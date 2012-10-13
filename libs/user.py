@@ -6,9 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import (LoginManager, current_user, login_required,
                             login_user, logout_user, UserMixin, AnonymousUser,
                             confirm_login, fresh_login_required)
-
-from mongoengine import *
-from forms import *
 import models
 
 

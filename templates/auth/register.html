@@ -16,11 +16,9 @@
 
 <form method="POST">
     {{ form.csrf_token }}
-    {{ form.email.label }} {{ form.email() }}
-    <br>
-    {{ form.password.label }} {{ form.password() }}
-    <br>
-    {{ form.confirm.label }} {{ form.confirm() }}
+    {{ form.email.label }} {{ form.email }}
+    {{ form.password.label }} {{ form.password }}
+    {{ form.confirm.label }} {{ form.confirm }}
     <br>
     <input type="submit" value="Go">
 </form>

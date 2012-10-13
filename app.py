@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import os
+import os,sys
 import re
 import datetime
 
@@ -17,14 +17,14 @@ from libs.user import *
 app = Flask(__name__)
 app.debug = True
 
-app.secret_key = os.environ.get('SECRET_KEY')
-flask_bcrypt = Bcrypt(app)
+app.secret_key = os.environ.get('SECRET_KEY') # SECRET_KEY=...... inside .env
+flask_bcrypt = Bcrypt(app) # for salting our user passwords
 
 #mongolab connection
 # uses .env file to get connection string
 # using a remote db get connection string from heroku config
-# using a local mongodb put this in .env
-#       MONGOLAB_URI=mongodb://localhost:27017/dwdfall2012
+# 	using a local mongodb put this in .env
+#   MONGOLAB_URI=mongodb://localhost:27017/dwdfall2012
 mongoengine.connect('dwdfall2012', host=os.environ.get('MONGOLAB_URI'))
 
 
@@ -52,11 +52,7 @@ login_manager.setup_app(app)
 @app.route('/')
 def index():
 
-	user = models.User.objects.get(email='john.schimmel@gmail.com')
-	app.logger.debug(user.password)
-
 	content = models.Content()
-	content.user = user
 	content.content = "wowza"
 	content.save()
 	
@@ -69,7 +65,7 @@ def index():
 @app.route("/register", methods=["GET","POST"])
 def register():
 	
-	registerForm = models.user_form(request.form)
+	registerForm = models.SignupForm(request.form)
 	
 	if request.method == 'POST' and registerForm.validate():
 		email = request.form['email']
@@ -78,23 +74,22 @@ def register():
 		password_hash = flask_bcrypt.generate_password_hash(request.form['password'])
 		
 		# prepare User
-		user = User(email,password_hash)
-		print user
-
+		user = User(email=email,password=password_hash)
+		
 		try:
-			user.save()
+			user.save()	
 			if login_user(user, remember="no"):
 				flash("Logged in!")
-				return redirect(request.args.get("next") or url_for("index"))
+				return redirect(request.args.get("next") or '/')
 			else:
 				flash("unable to log you in")
 
-		except:
-			flash("unable to register with that email address")
-			app.logger.error("Error on registration - possible duplicate emails")
-	
+		except mongoengine.queryset.NotUniqueError:
+			e = sys.exc_info()
+			app.logger.error(e)
+			#return e
+			
 	# prepare registration form			
-	registerForm = RegisterForm(csrf_enabled=True)
 	templateData = {
 
 		'form' : registerForm
