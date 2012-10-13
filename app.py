@@ -116,17 +116,21 @@ def admin_main():
 
 		try:
 			newContent.save()
+
 		except:
 			e = sys.exc_info()
 			app.logger.error(e)
-			return e
+			
+		return redirect('/admin')
 
+	else:
+		templateData = {
+			'allContent' : models.Content.objects(),
+			'current_user' : current_user,
+			'data' : [],
+			'form' : contentForm
+		}
 
-	templateData = {
-		'current_user' : current_user,
-		'data' : [],
-		'form' : contentForm
-	}
 	return render_template('admin.html', **templateData)
 		
 

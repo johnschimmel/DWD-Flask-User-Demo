@@ -2,27 +2,46 @@
 
 {% block body %}
 <h1>Welcome back {{ current_user.email }}</h1>
+
 <hr>
-<p>Write another post.</p>
+<div class="row">
+	<div class="span-6">
+		<p>Write another post.</p>
 
-{% if form.errors %}
-    <ul class="errors">
-        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-            {% for error in field_errors %}
-                <li class="alert">{{ form[field_name].label }}: {{ error }}</li>
-            {% endfor %}
-        {% endfor %}
-    </ul>
-{% endif %}
-<form method="POST">
-	{{ form.csrf_token }}
+		{% if form.errors %}
+	    <ul class="errors">
+	        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+	            {% for error in field_errors %}
+	                <li class="alert">{{ form[field_name].label }}: {{ error }}</li>
+	            {% endfor %}
+	        {% endfor %}
+	    </ul>
+		{% endif %}
+		<form method="POST">
+			{{ form.csrf_token }}
 
-	{{ form.title.label}}
-	{{ form.title }}
+			{{ form.title.label}}
+			{{ form.title }}
 
-	{{ form.content.label }}
-	{{ form.content }}
-	<br>
-	<input type="submit" value="Save Post">
-</form>
+			{{ form.content.label }}
+			{{ form.content }}
+			<br>
+			<input type="submit" value="Save Post">
+		</form>
+
+	</div>
+
+	<div class="span-6">
+		{% for c in allContent %}
+			<div class="">
+				{{ c.title }}
+				<br>
+				{{ c.content}}
+				<br>
+				by: {{ c.user.email }}
+			</div>
+			<hr>
+		{% endfor %}
+	</div>
+
 {% endblock %}
