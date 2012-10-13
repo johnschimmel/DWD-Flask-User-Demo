@@ -7,6 +7,7 @@ import datetime
 
     
 class User(mongoengine.Document):
+	username = mongoengine.StringField(unique=True, max_length=30, required=True)
 	email = mongoengine.EmailField(unique=True, required=True)
 	password = mongoengine.StringField(default=True,required=True)
 	active = mongoengine.BooleanField(default=True)
@@ -20,7 +21,10 @@ user_form = model_form(User, exclude=['password'])
 class SignupForm(user_form):
 	password = PasswordField('Password', validators=[validators.Required(), validators.EqualTo('confirm', message='Passwords must match')])
 	confirm = PasswordField('Repeat Password')
-	
+
+class LoginForm(user_form):
+	password = PasswordField('Password',validators=[validators.Required()])
+
 #################  end of user models/forms ##########################
 
 
@@ -29,6 +33,10 @@ class Content(mongoengine.Document):
     title = mongoengine.StringField(max_length="100",required=True)
     content = mongoengine.StringField(required=True)
     timestamp = mongoengine.DateTimeField(default=datetime.datetime.now())
+
+    @mongoengine.queryset_manager
+    def objects(doc_cls, queryset):
+    	return queryset.order_by('-timestamp')
 
 # content form
 content_form = model_form(Content)

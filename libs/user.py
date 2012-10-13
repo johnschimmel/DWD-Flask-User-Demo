@@ -10,7 +10,8 @@ import models
 
 
 class User(UserMixin):
-    def __init__(self, email=None, password=None, active=True, id=None):
+    def __init__(self, username=None, email=None, password=None, active=True, id=None):
+        self.username = username
         self.email = email
         self.password = password
         self.active = active
@@ -19,7 +20,7 @@ class User(UserMixin):
 
 
     def save(self): 
-        newUser = models.User(email=self.email, password=self.password, active=self.active)
+        newUser = models.User(email=self.email, password=self.password, username=self.username, active=self.active)
         newUser.save()
         print "new user id = %s " % newUser.id
         self.id = newUser.id
@@ -29,6 +30,7 @@ class User(UserMixin):
 
     	dbUser = models.User.objects.get(email=email)
     	if dbUser:
+            self.username = dbUser.username
             self.email = dbUser.email
             self.active = dbUser.active
             self.id = dbUser.id
@@ -36,12 +38,25 @@ class User(UserMixin):
         else:
             return None
     
+    def get_by_username(self, username):
+        dbUser = models.User.objects.get(username=username)
+        if dbUser:
+            self.username = dbUser.username
+            self.email = dbUser.email
+            self.active = dbUser.active
+            self.id = dbUser.id
+            return self
+        else:
+            return None
+            
+
     def get_by_email_w_password(self, email):
 
         try:
             dbUser = models.User.objects.get(email=email)
             
             if dbUser:
+                self.username = dbUser.username
                 self.email = dbUser.email
                 self.active = dbUser.active
                 self.password = dbUser.password
@@ -56,11 +71,11 @@ class User(UserMixin):
     def get_by_id(self, id):
     	dbUser = models.User.objects.with_id(id)
     	if dbUser:
-    		self.email = dbUser.email
-    		self.active = dbUser.active
-    		self.id = dbUser.id
-
-    		return self
+            self.username = dbUser.username
+            self.email = dbUser.email
+            self.active = dbUser.active
+            self.id = dbUser.id
+            return self
     	else:
     		return None
 

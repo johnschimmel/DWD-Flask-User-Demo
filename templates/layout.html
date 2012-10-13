@@ -57,7 +57,24 @@
        <a class="brand" href="../">Flask User Example</a>
        <div class="nav-collapse" id="main-menu">
         <div class="nav-collapse">
-            
+            <ul class="nav">
+              <li>
+                {% if current_user.is_anonymous() %}
+                <a href="/login">
+                  Login / Register
+                </a>
+                
+                {% else %}
+                
+                <a href="/logout">
+                  Logout {{ current_user.username }}
+                </a>
+
+                {% endif %}
+              </li>
+                
+              
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
      </div>
@@ -91,7 +108,7 @@
     <!-- Footer
     ================================================== -->
     <footer class="footer">
-      <p class="pull-right"><a href="#">Back to top</a></p>
+      
     </footer>
   </div><!-- /container -->
 

@@ -51,49 +51,21 @@ login_manager.setup_app(app)
 
 @app.route('/')
 def index():
+	# get requested user's content
+	user_content = models.Content.objects
 
-	
-	return 'Hello World!'
-
-
-#
-# Route disabled - enable route to allow user registration.
-#
-@app.route("/register", methods=["GET","POST"])
-def register():
-	
-	registerForm = models.SignupForm(request.form)
-	
-	if request.method == 'POST' and registerForm.validate():
-		email = request.form['email']
-		
-		# generate password hash
-		password_hash = flask_bcrypt.generate_password_hash(request.form['password'])
-		
-		# prepare User
-		user = User(email=email,password=password_hash)
-		
-		try:
-			user.save()	
-			if login_user(user, remember="no"):
-				flash("Logged in!")
-				return redirect(request.args.get("next") or '/')
-			else:
-				flash("unable to log you in")
-
-		except mongoengine.queryset.NotUniqueError:
-			e = sys.exc_info()
-			app.logger.error(e)
-			#return e
-			
-	# prepare registration form			
+	# prepare the template data dictionary
 	templateData = {
-
-		'form' : registerForm
+		'current_user' : current_user,
+		'user_content'  : user_content,
+		'users' : models.User.objects()
 	}
-	app.logger.debug(templateData)
+	
+	app.logger.debug(current_user)
 
-	return render_template("/auth/register.html", **templateData)
+	return render_template('all_content.html', **templateData)
+
+
 
 @app.route('/admin', methods=['GET','POST'])
 @login_required
@@ -124,32 +96,131 @@ def admin_main():
 		templateData = {
 			'allContent' : models.Content.objects(),
 			'current_user' : current_user,
-			'data' : [],
 			'form' : contentForm
 		}
+	
 
 	return render_template('admin.html', **templateData)
 		
+@app.route('/users/<username>')
+def user(username):
+
+	try:
+		user = models.User.objects.get(username=username)
+
+	except Exception:
+		e = sys.exc_info()
+		app.logger.error(e)
+		abort(404)
+
+	# get requested user's content
+	user_content = models.Content.objects(user=user)
+
+	# prepare the template data dictionary
+	templateData = {
+		'user' : user,
+		'current_user' : current_user,
+		'user_content'  : user_content,
+		'users' : models.User.objects()
+	}
+
+	return render_template('user_content.html', **templateData)
+
+
+#
+# Route disabled/enable route to allow user registration.
+#
+@app.route("/register", methods=["GET","POST"])
+def register():
+	
+	loginForm = models.LoginForm(None)
+	registerForm = models.SignupForm(request.form)
+	
+	if request.method == 'POST' and registerForm.validate():
+		email = request.form['email']
+		username = request.form['username']
+
+		# generate password hash
+		password_hash = flask_bcrypt.generate_password_hash(request.form['password'])
+		
+		# prepare User
+		user = User(username=username, email=email, password=password_hash)
+		
+		# save new user, but there might be exceptions (uniqueness of email and/or username)
+		try:
+			user.save()	
+			if login_user(user, remember="no"):
+				flash("Logged in!")
+				return redirect(request.args.get("next") or '/')
+			else:
+				flash("unable to log you in")
+
+		# got an error, most likely a uniqueness error
+		except mongoengine.queryset.NotUniqueError:
+			e = sys.exc_info()
+			exception, error, obj = e
+			
+			app.logger.error(e)
+			app.logger.error(error)
+			app.logger.error(type(error))
+
+			# uniqueness error was raised. tell user (via flash messaging) which error they need to fix.
+			if str(error).find("email") > -1:			
+				flash("Email submitted is already registered.")
+	
+			elif str(error).find("username") > -1:
+				flash("Username is already registered. Pick another.")
+
+			app.logger.error(error)	
+
+	# prepare registration form			
+	templateData = {
+		'loginForm' : loginForm,
+		'form' : registerForm
+	}
+	
+	return render_template("/auth/register.html", **templateData)
 
 	
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST" and "email" in request.form:
-        email = request.form["email"]
-        userObj = User()
-        user = userObj.get_by_email_w_password(email)
-     	if user and flask_bcrypt.check_password_hash(user.password,request.form["password"]) and user.is_active():
+
+	# get the login and registration forms
+	loginForm = models.LoginForm(request.form)
+	regForm = models.SignupForm(None)
+
+	# is user trying to log in?
+	# 
+	if request.method == "POST" and 'email' in request.form:
+		email = request.form["email"]
+
+		user = User().get_by_email_w_password(email)
+		
+		# if user in database and password hash match then log in.
+	  	if user and flask_bcrypt.check_password_hash(user.password,request.form["password"]) and user.is_active():
 			remember = request.form.get("remember", "no") == "yes"
 
 			if login_user(user, remember=remember):
 				flash("Logged in!")
-				return redirect(request.args.get("next") or url_for("index"))
+				return redirect(request.args.get("next") or '/admin')
 			else:
+
 				flash("unable to log you in")
+		
 
-    return render_template("/auth/login.html")
+	else:
 
+		templateData = {
+			'loginForm' : loginForm,
+			'form' : regForm
+		}
+
+		return render_template('/auth/register.html', **templateData)
+
+
+	
+	
 
 @app.route("/reauth", methods=["GET", "POST"])
 @login_required

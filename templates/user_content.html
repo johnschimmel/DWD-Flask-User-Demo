@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div class="row">
+
+
+	<div class="span8">
+		<h1>{{ user.username }}'s writings</h1>
+
+		{% for c in user_content %}
+			<div class="">
+				<h4>{{ c.title }}</h4>
+				<p>{{ c.content}}</p>
+				<p>{{ c.timestamp.strftime("%a. %b. %d, %Y %I:%M %p")}}</p>
+			</div>
+			<hr>
+		{% endfor %}
+	</div>
+
+	<div class="span4">
+		<h3>All Users</h3>
+		<ul>
+		{% for u in users %}
+			<li><a href="/users/{{ u.username }}">{{u.username}}</a></li>
+		{% endfor %}
+		</ul>
+	</div>
+
+{% endblock %}

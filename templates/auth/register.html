@@ -1,28 +1,55 @@
 {% extends "/layout.html" %}
 
-
-
 {% block body %}
-<br><br><br><br>
-{% if form.errors %}
-    <ul class="errors">
-        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-            {% for error in field_errors %}
-                <li class="alert">{{ form[field_name].label }}: {{ error }}</li>
+<div class="row">
+    <div class=" offset1 span4">
+        <h2>Login</h2>
+        <form class="well" method="post" action="/login">
+            {{ form.email.label }} {{ form.email }}
+            {{ form.password.label }} {{ form.password }}
+            <dd><input type="checkbox" name="remember" value="yes">
+            <dd><input type="submit" value="Login">
+            </dl>
+        </form>
+    </div>
+
+    
+    <div class="offset1 span4">
+        <h1>Register</h1>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+              <li class="alert">{{ message }}</li>
             {% endfor %}
-        {% endfor %}
-    </ul>
-{% endif %}
+            </ul>
+          {% endif %}
+        {% endwith %}
 
-<form method="POST">
-    {{ form.csrf_token }}
-    {{ form.email.label }} {{ form.email }}
-    {{ form.password.label }} {{ form.password }}
-    {{ form.confirm.label }} {{ form.confirm }}
-    <br>
-    <input type="submit" value="Go">
-</form>
+        {% if form.errors %}
+        <ul class="errors">
+            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                {% for error in field_errors %}
+                    <li class="alert">{{ form[field_name].label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+        {% endif %}
 
+
+        <div class="well">
+            <form action="/register" method="POST">
+                {{ form.csrf_token }}
+                {{ form.username.label }} {{ form.username }}
+                {{ form.email.label }} {{ form.email }}
+                {{ form.password.label }} {{ form.password }}
+                {{ form.confirm.label }} {{ form.confirm }}
+                <br>
+                <input type="submit" value="Go"> <small>(all fields required)</small>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
