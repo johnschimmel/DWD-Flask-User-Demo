@@ -52,9 +52,6 @@ login_manager.setup_app(app)
 @app.route('/')
 def index():
 
-	content = models.Content()
-	content.content = "wowza"
-	content.save()
 	
 	return 'Hello World!'
 
