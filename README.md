@@ -2,7 +2,10 @@
 
 ## Flask and User Management
 
+
 ### Demo site to demonstrate how to 
+
+#### [View Demo Site](http://warm-sea-6393.herokuapp.com/)
 
 * register and login users. 
 * create database documents associated to a specific user.
@@ -68,6 +71,15 @@ or
 	. venv/bin/activate
 	foreman start
 
+
+## The routes
+
+* / - main page - display all content and list of users
+* /user/<username> - display all content for a given user
+* /admin  - must be logged in, create a new piece of content for a user
+* /register - create a new user
+* /login - login with registered email and password
+* /logout - logout user
 
 
 
