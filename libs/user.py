@@ -67,6 +67,10 @@ class User(UserMixin):
     def is_active(self):
        return self.active
 
+    def get(self):
+        if current_user:
+            return models.User.objects.with_id(current_user.id)
+
 
 class Anonymous(AnonymousUser):
     name = u"Anonymous"

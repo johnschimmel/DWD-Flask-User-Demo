@@ -98,11 +98,37 @@ def register():
 
 	return render_template("/auth/register.html", **templateData)
 
-@app.route('/admin', methods=["GET"])
+@app.route('/admin', methods=['GET','POST'])
 @login_required
 def admin_main():
-	return "You are inside admin!"
-	
+
+	contentForm = models.content_form(request.form)
+
+	if request.method=="POST" and contentForm.validate():
+		app.logger.debug(request.form)
+		
+		newContent = models.Content()
+		newContent.title = request.form.get('title')
+		newContent.content = request.form.get('content')
+
+		#link to current user
+		newContent.user = current_user.get()
+
+		try:
+			newContent.save()
+		except:
+			e = sys.exc_info()
+			app.logger.error(e)
+			return e
+
+
+	templateData = {
+		'current_user' : current_user,
+		'data' : [],
+		'form' : contentForm
+	}
+	return render_template('admin.html', **templateData)
+		
 
 	
 
