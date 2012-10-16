@@ -7,8 +7,8 @@ import datetime
 
     
 class User(mongoengine.Document):
-	username = mongoengine.StringField(unique=True, max_length=30, required=True)
-	email = mongoengine.EmailField(unique=True, required=True)
+	username = mongoengine.StringField(unique=True, max_length=30, required=True, verbose_name="Pick a Username")
+	email = mongoengine.EmailField(unique=True, required=True, verbose_name="Email Address")
 	password = mongoengine.StringField(default=True,required=True)
 	active = mongoengine.BooleanField(default=True)
 	isAdmin = mongoengine.BooleanField(default=False)
