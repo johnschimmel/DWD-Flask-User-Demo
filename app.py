@@ -223,7 +223,8 @@ def admin_main():
 		templateData = {
 			'allContent' : models.Content.objects(user=current_user.id),
 			'current_user' : current_user,
-			'form' : contentForm
+			'form' : contentForm,
+			'formType' : 'New'
 		}
 	
 
@@ -255,14 +256,16 @@ def admin_edit_post(content_id):
 			except:
 				e = sys.exc_info()
 				app.logger.error(e)
-				
-			return redirect('/admin')
+			
+			flash("Post was updated successfully.")
+			return redirect('/admin/%s' % contentData.id)
 
 		else:
 			templateData = {
 				'allContent' : models.Content.objects(user=current_user.id),
 				'current_user' : current_user,
-				'form' : contentForm
+				'form' : contentForm,
+				'formType' : 'Update'
 			}
 		
 		return render_template('admin.html', **templateData)
