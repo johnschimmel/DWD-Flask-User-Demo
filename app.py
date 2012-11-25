@@ -71,89 +71,9 @@ def index():
 	return render_template('all_content.html', **templateData)
 
 
-
-@app.route('/admin', methods=['GET','POST'])
-@login_required
-def admin_main():
-
-	contentForm = models.content_form(request.form)
-
-	if request.method=="POST" and contentForm.validate():
-		app.logger.debug(request.form)
-		
-		newContent = models.Content()
-		newContent.title = request.form.get('title')
-		newContent.content = request.form.get('content')
-
-		#link to current user
-		newContent.user = current_user.get()
-
-		try:
-			newContent.save()
-
-		except:
-			e = sys.exc_info()
-			app.logger.error(e)
-			
-		return redirect('/admin')
-
-	else:
-		templateData = {
-			'allContent' : models.Content.objects(user=current_user.id),
-			'current_user' : current_user,
-			'form' : contentForm
-		}
-	
-
-	return render_template('admin.html', **templateData)
-		
-@app.route('/admin/<content_id>', methods=['GET','POST'])
-@login_required
-def admin_edit_post(content_id):
-
-	# get the content requested
-	contentData = models.Content.objects.get(id=content_id)
-
-	# if contentData exists AND is owned by current_user then continue
-	if contentData and contentData.user.id == current_user.id:
-
-		# create the content form, populate with contentData
-		contentForm = models.content_form(request.form, obj=contentData)
-
-		if request.method=="POST" and contentForm.validate():
-			app.logger.debug(request.form)
-			
-			contentData.title = request.form.get('title')
-			contentData.content = request.form.get('content')
-
-			
-			try:
-				contentData.save()
-
-			except:
-				e = sys.exc_info()
-				app.logger.error(e)
-				
-			return redirect('/admin')
-
-		else:
-			templateData = {
-				'allContent' : models.Content.objects(user=current_user.id),
-				'current_user' : current_user,
-				'form' : contentForm
-			}
-		
-		return render_template('admin.html', **templateData)
-
-	# current user does not own requested content
-	elif contentData.user.id != current_user.id:
- 
-		flash("Log in to edit this content.","login")
-		return redirect("/login")
-	else:
-
-		abort(404)
-
+#
+# Display all the posts for a given user.
+#
 @app.route('/users/<username>')
 def user(username):
 
@@ -258,8 +178,9 @@ def login():
 			else:
 
 				flash("unable to log you in","login")
+	
 		else:
-			flash("unable to find that email address","login")
+			flash("Incorrect email and password submission","login")
 			return redirect("/login")
 
 	else:
@@ -271,7 +192,89 @@ def login():
 		return render_template('/auth/login.html', **templateData)
 
 
+
+
+@app.route('/admin', methods=['GET','POST'])
+@login_required
+def admin_main():
+
+	contentForm = models.content_form(request.form)
+
+	if request.method=="POST" and contentForm.validate():
+		app.logger.debug(request.form)
+		
+		newContent = models.Content()
+		newContent.title = request.form.get('title')
+		newContent.content = request.form.get('content')
+
+		#link to current user
+		newContent.user = current_user.get()
+
+		try:
+			newContent.save()
+
+		except:
+			e = sys.exc_info()
+			app.logger.error(e)
+			
+		return redirect('/admin')
+
+	else:
+		templateData = {
+			'allContent' : models.Content.objects(user=current_user.id),
+			'current_user' : current_user,
+			'form' : contentForm
+		}
 	
+
+	return render_template('admin.html', **templateData)
+		
+@app.route('/admin/<content_id>', methods=['GET','POST'])
+@login_required
+def admin_edit_post(content_id):
+
+	# get the content requested
+	contentData = models.Content.objects.get(id=content_id)
+
+	# if contentData exists AND is owned by current_user then continue
+	if contentData and contentData.user.id == current_user.id:
+
+		# create the content form, populate with contentData
+		contentForm = models.content_form(request.form, obj=contentData)
+
+		if request.method=="POST" and contentForm.validate():
+			app.logger.debug(request.form)
+			
+			contentData.title = request.form.get('title')
+			contentData.content = request.form.get('content')
+
+			
+			try:
+				contentData.save()
+
+			except:
+				e = sys.exc_info()
+				app.logger.error(e)
+				
+			return redirect('/admin')
+
+		else:
+			templateData = {
+				'allContent' : models.Content.objects(user=current_user.id),
+				'current_user' : current_user,
+				'form' : contentForm
+			}
+		
+		return render_template('admin.html', **templateData)
+
+	# current user does not own requested content
+	elif contentData.user.id != current_user.id:
+ 
+		flash("Log in to edit this content.","login")
+		return redirect("/login")
+	else:
+
+		abort(404)
 	
 
 @app.route("/reauth", methods=["GET", "POST"])
