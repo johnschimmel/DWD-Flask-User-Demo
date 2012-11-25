@@ -12,7 +12,10 @@
 			<div class="">
 				<h4>{{ c.title }}</h4>
 				<p>{{ c.content}}</p>
-				<p>{{ c.timestamp.strftime("%a. %b. %d, %Y %I:%M %p")}}</p>
+				<p>{% if c.user.id == current_user.id %}<a href="/admin/{{c.id}}" class="btn btn-small btn-primary">edit</a>{% endif %}
+					{{ c.timestamp.strftime("%a. %b. %d, %Y %I:%M %p")}}
+
+				</p>
 			</div>
 			<hr>
 		{% endfor %}

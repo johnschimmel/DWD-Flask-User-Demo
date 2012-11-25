@@ -9,11 +9,16 @@
 			<div class="row">
 				<div class="span2">
 
-					<h2>
+					<h3>
 						{{ c.timestamp.strftime("%b. %d") }}<br>
 						{{ c.timestamp.strftime("%I:%M %p")}}
-					</h2>
-					<p>by <a href="/users/{{ c.user.username }}">{{ c.user.username }}</a>
+					</h3>
+					<p>by 
+						{% if c.user.id == current_user.id %}
+							You <a href="/admin/{{c.id}}" class="btn btn-small btn-primary">edit</a>
+						{% else %}
+							<a href="/users/{{ c.user.username }}">{{ c.user.username }}</a>
+						{% endif %}
 					</p>
 				</div>
 

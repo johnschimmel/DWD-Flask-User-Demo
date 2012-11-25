@@ -16,12 +16,12 @@ class User(mongoengine.Document):
 
 user_form = model_form(User, exclude=['password'])
 
-# signup form using WTForm directly
-# provides additional password/confirm validation
+# Signup Form created from user_form
 class SignupForm(user_form):
 	password = PasswordField('Password', validators=[validators.Required(), validators.EqualTo('confirm', message='Passwords must match')])
 	confirm = PasswordField('Repeat Password')
 
+# Login form will provide a Password field (WTForm form field)
 class LoginForm(user_form):
 	password = PasswordField('Password',validators=[validators.Required()])
 

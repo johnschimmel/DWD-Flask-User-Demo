@@ -4,30 +4,34 @@ import re
 import datetime
 
 from flask import Flask, session, request, url_for, escape, render_template, json, jsonify, flash, redirect, abort
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask.ext.mongoengine import mongoengine
+import models
+
+# Flask-Login 
 from flask.ext.login import (LoginManager, current_user, login_required,
                             login_user, logout_user, UserMixin, AnonymousUser,
                             confirm_login, fresh_login_required)
+
+# Library
 from flaskext.bcrypt import Bcrypt
-from flask.ext.mongoengine import mongoengine
-import models
 
 from libs.user import *
 
 app = Flask(__name__)
 app.debug = True
-
 app.secret_key = os.environ.get('SECRET_KEY') # SECRET_KEY=...... inside .env
-flask_bcrypt = Bcrypt(app) # for salting our user passwords
+
+# Flask BCrypt will be used to salt the user password
+flask_bcrypt = Bcrypt(app)
 
 #mongolab connection
 # uses .env file to get connection string
 # using a remote db get connection string from heroku config
 # 	using a local mongodb put this in .env
 #   MONGOLAB_URI=mongodb://localhost:27017/dwdfall2012
-mongoengine.connect('dwdfall2012', host=os.environ.get('MONGOLAB_URI'))
+mongoengine.connect('userdemo', host=os.environ.get('MONGOLAB_URI'))
 
-
+# Login management defined
 login_manager = LoginManager()
 login_manager.anonymous_user = Anonymous
 login_manager.login_view = "login"
@@ -46,6 +50,7 @@ def load_user(id):
 	else:
 		return None
 
+# connect the login manager to the main Flask app
 login_manager.setup_app(app)
 
 
@@ -94,7 +99,7 @@ def admin_main():
 
 	else:
 		templateData = {
-			'allContent' : models.Content.objects(),
+			'allContent' : models.Content.objects(user=current_user.id),
 			'current_user' : current_user,
 			'form' : contentForm
 		}
@@ -102,6 +107,53 @@ def admin_main():
 
 	return render_template('admin.html', **templateData)
 		
+@app.route('/admin/<content_id>', methods=['GET','POST'])
+@login_required
+def admin_edit_post(content_id):
+
+	# get the content requested
+	contentData = models.Content.objects.get(id=content_id)
+
+	# if contentData exists AND is owned by current_user then continue
+	if contentData and contentData.user.id == current_user.id:
+
+		# create the content form, populate with contentData
+		contentForm = models.content_form(request.form, obj=contentData)
+
+		if request.method=="POST" and contentForm.validate():
+			app.logger.debug(request.form)
+			
+			contentData.title = request.form.get('title')
+			contentData.content = request.form.get('content')
+
+			
+			try:
+				contentData.save()
+
+			except:
+				e = sys.exc_info()
+				app.logger.error(e)
+				
+			return redirect('/admin')
+
+		else:
+			templateData = {
+				'allContent' : models.Content.objects(user=current_user.id),
+				'current_user' : current_user,
+				'form' : contentForm
+			}
+		
+		return render_template('admin.html', **templateData)
+
+	# current user does not own requested content
+	elif contentData.user.id != current_user.id:
+ 
+		flash("Log in to edit this content.","login")
+		return redirect("/login")
+	else:
+
+		abort(404)
+
 @app.route('/users/<username>')
 def user(username):
 
@@ -128,14 +180,15 @@ def user(username):
 
 
 #
-# Route disabled/enable route to allow user registration.
+# Register new user
 #
-@app.route("/register", methods=["GET","POST"])
+@app.route("/register", methods=['GET','POST'])
 def register():
 	
-	loginForm = models.LoginForm(None)
+	# prepare registration form 
 	registerForm = models.SignupForm(request.form)
-	
+	app.logger.info(request.form)
+
 	if request.method == 'POST' and registerForm.validate():
 		email = request.form['email']
 		username = request.form['username']
@@ -175,7 +228,6 @@ def register():
 
 	# prepare registration form			
 	templateData = {
-		'loginForm' : loginForm,
 		'form' : registerForm
 	}
 	
@@ -188,8 +240,7 @@ def login():
 
 	# get the login and registration forms
 	loginForm = models.LoginForm(request.form)
-	regForm = models.SignupForm(None)
-
+	
 	# is user trying to log in?
 	# 
 	if request.method == "POST" and 'email' in request.form:
@@ -214,11 +265,10 @@ def login():
 	else:
 
 		templateData = {
-			'loginForm' : loginForm,
-			'form' : regForm
+			'form' : loginForm
 		}
 
-		return render_template('/auth/register.html', **templateData)
+		return render_template('/auth/login.html', **templateData)
 
 
 	
