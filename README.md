@@ -49,11 +49,11 @@ We need a SECRET_KEY for salting the user passwords.
 
 * Open your .env and add a new line 
 
-	SECRET_KEY=SOMETHINGSECRETANDRANDOMHERE
+		SECRET_KEY=SOMETHINGSECRETANDRANDOMHERE
 
 * We need to add this secret key to Heroku config vars too
 
-	heroku config:add SECRET_KEY=SOMETHINGSECRETANDRANDOMHERE
+		heroku config:add SECRET_KEY=SOMETHINGSECRETANDRANDOMHERE
 
 This will add a new key and value to the App on Heroku.
 

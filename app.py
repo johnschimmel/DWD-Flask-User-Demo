@@ -15,6 +15,7 @@ from flask.ext.login import (LoginManager, current_user, login_required,
 # Library
 from flaskext.bcrypt import Bcrypt
 
+#custom user library - maps User object to User model
 from libs.user import *
 
 app = Flask(__name__)
@@ -39,8 +40,9 @@ login_manager.login_view = "login"
 login_manager.login_message = u"Please log in to access this page."
 login_manager.refresh_view = "reauth"
 
-# Flask-Login requires a 'user_loader' method 
-# This method will read in session information and populate the User object, current_user
+# Flask-Login requires a 'user_loader' callback 
+# This method will called with each Flask route request automatically
+# When this callback runs, it will populate the User object, current_user
 # reference http://packages.python.org/Flask-Login/#how-it-works
 @login_manager.user_loader
 def load_user(id):
@@ -58,6 +60,7 @@ def load_user(id):
 login_manager.setup_app(app)
 
 
+# main route - display recent posts by all users
 @app.route('/')
 def index():
 	# get requested user's content
@@ -81,6 +84,7 @@ def index():
 @app.route('/users/<username>')
 def user(username):
 
+	# Does requested username exists, 404 if not
 	try:
 		user = models.User.objects.get(username=username)
 
@@ -89,7 +93,7 @@ def user(username):
 		app.logger.error(e)
 		abort(404)
 
-	# get requested user's content
+	# get content that is linked to user, 
 	user_content = models.Content.objects(user=user)
 
 	# prepare the template data dictionary
@@ -158,7 +162,7 @@ def register():
 	return render_template("/auth/register.html", **templateData)
 
 	
-
+# Login route - will display login form and receive POST to authenicate a user
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
