@@ -32,12 +32,16 @@ flask_bcrypt = Bcrypt(app)
 mongoengine.connect('userdemo', host=os.environ.get('MONGOLAB_URI'))
 
 # Login management defined
+# reference http://packages.python.org/Flask-Login/#configuring-your-application
 login_manager = LoginManager()
 login_manager.anonymous_user = Anonymous
 login_manager.login_view = "login"
 login_manager.login_message = u"Please log in to access this page."
 login_manager.refresh_view = "reauth"
 
+# Flask-Login requires a 'user_loader' method 
+# This method will read in session information and populate the User object, current_user
+# reference http://packages.python.org/Flask-Login/#how-it-works
 @login_manager.user_loader
 def load_user(id):
 	if id is None:
