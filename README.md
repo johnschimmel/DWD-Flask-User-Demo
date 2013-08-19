@@ -5,7 +5,7 @@
 
 ### Demo site to demonstrate how to 
 
-#### View Demo Site [itppy-user-demo.herokuapp.com](itppy-user-demo.herokuapp.com)
+#### View Demo Site [http://itppy-user-demo.herokuapp.com](itppy-user-demo.herokuapp.com)
 
 * register and login users. 
 * create database documents associated to a specific user.
